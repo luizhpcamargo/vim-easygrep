@@ -1970,6 +1970,20 @@ function! <sid>GrepCurrentWord(add, wholeword)
     return s:ClearGatewayVariables()
 endfunction
 " }}}
+" GrepCurrentMethod {{{
+function! <sid>GrepCurrentMethod(add, wholeword)
+    call s:SetGatewayVariables()
+    let currWord=s:GetCurrentWord()
+    if empty(currWord)
+        call EasyGrep#Warning("No current word")
+        return s:ClearGatewayVariables()
+    endif
+    currWord = "def [^(self." + currWord +")]"
+    call s:CheckIfCurrentFileIsSearched()
+    let r = s:DoGrep(currWord, a:add, a:wholeword, "", 1, "")
+    return s:ClearGatewayVariables()
+endfunction
+" }}}
 " ReplaceSelection {{{
 function! <sid>ReplaceSelection(wholeword)
     call s:SetGatewayVariables()
@@ -3658,6 +3672,9 @@ endif
 if !hasmapto("<plug>EgMapReplaceSelection_R")
     vmap <silent> <Leader>vR <plug>EgMapReplaceSelection_R
 endif
+if !hasmapto("<plug>EgMapGrepCurrentMethod_v")
+    map <silent> <Bslash>ff <plug>EgMapGrepCurrentMethod_v
+endif
 
 if !exists("g:EasyGrepMappingsSet")
     nmap <silent> <unique> <script> <plug>EgMapGrepOptions          :call <sid>GrepOptions()<CR>
@@ -3673,6 +3690,7 @@ if !exists("g:EasyGrepMappingsSet")
     vmap <silent> <unique> <script> <plug>EgMapReplaceSelection_r  y:call <sid>ReplaceSelection(0)<CR>
     nmap <silent> <unique> <script> <plug>EgMapReplaceCurrentWord_R :call <sid>ReplaceCurrentWord(1)<CR>
     vmap <silent> <unique> <script> <plug>EgMapReplaceSelection_R  y:call <sid>ReplaceSelection(1)<CR>
+    nmap <silent> <unique> <script> <plug>EgMapGrepCurrentMethod_v    :call <sid>GrepCurrentMethod("", 0)<CR>
 
     let g:EasyGrepMappingsSet = 1
 endif
